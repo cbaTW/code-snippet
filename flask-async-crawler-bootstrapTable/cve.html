@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>CSDD Vulnerable Software Formatter</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link href="https://unpkg.com/jquery-resizable-columns@0.2.3/dist/jquery.resizableColumns.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/reorder-rows/bootstrap-table-reorder-rows.css">
+    <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+    <div id="insertion" class="mt-2 container">
+      <div class="row mb-0">
+          <h1 class="h2 mb-0"">Header</h1>
+      </div>
+    </div>
+    <div class="container">
+      <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+        <p class="col-md-4 mb-0 text-muted">© 2022 Should Place Something Here, Inc.</p>
+    
+        <div href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+          <i class="fa-regular fa-face-smile-wink fa-lg" style="color: #212529BF;"></i>
+        </div>
+        <ul class="nav col-md-4 justify-content-end">
+          <li class="nav-item"><a href="/dashboard" class="nav-link px-2 text-muted">Home</a></li>
+        </ul>
+      </footer>
+    </div>
+    <div class="position-fixed top-50 start-50 translate-middle" style="z-index: 11">
+
+      <div id="toast-success" class="toast text-white bg-dark"" role="alert">
+        <!-- Ref: https://bootstrap5.hexschool.com/docs/5.1/components/toasts/#placement -->
+        <div class="toast-header">
+          <strong class="me-auto">:)</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+          Lazy you
+          <i class="fa-regular fa-face-meh fa-lg" style="color: #878f9b;"></i>
+        </div>
+      </div>
+
+      <div id="toast-fail" class="toast text-white bg-dark"" role="alert">
+        <div class="toast-header">
+          <strong class="me-auto">Congrats</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+          You copied nothing
+          <i class="fa-regular fa-face-sad-cry fa-lg" style="color: #878f9b;"></i>
+        </div>
+      </div>
+      
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/TableDnD/0.9.1/jquery.tablednd.js" integrity="sha256-d3rtug+Hg1GZPB7Y/yTcRixO/wlI78+2m08tosoRn7A=" crossorigin="anonymous"></script>
+    
+    <script src="https://unpkg.com/jquery-resizable-columns@0.2.3/dist/jquery.resizableColumns.min.js"></script>
+
+    <script src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/reorder-rows/bootstrap-table-reorder-rows.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/resizable/bootstrap-table-resizable.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
+
+    <script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+    <script>
+      const result = {{ result|tojson }}
+
+      function detailFormatter (index, row, $element) {
+        let tmp = ''; let v3 = row.CVSS3; v2 = row.CVSS2;
+        tmp += v3.Exist ? `<p><b>CVSS3:</b> ${v3.Points}, ${v3.String}</p>` : '<p><b>CVSS3: N/A</b></p>';
+        tmp += v2.Exist ? `<p><b>CVSS2:</b> ${v2.Points}, ${v2.String}</p>` : '<p><b>CVSS2: N/A</b></p>';
+        tmp += `<p><b>EPSS:</b> ${row.epss}</p>`
+        tmp += `<p><b>Percentile:</b> ${row.percentile}</p>`
+        tmp += `<p>Published: ${row.Published}</p>`
+        return tmp
+      }
+
+      function initTable ( item, index ) {
+        $(`#table${index}`).bootstrapTable('destroy')
+        $(`#table${index}`).bootstrapTable({
+          data: item.CVE_data,
+
+          stickyHeader: true,
+          // stickyHeaderOffsetLeft: parseInt($('body').css('padding-left'), 10),
+          // stickyHeaderOffsetRight: parseInt($('body').css('padding-right'), 10),
+          // Ref: https://examples.bootstrap-table.com/#methods/toggle-fullscreen.html#view-source
+
+          columns: [
+            {
+              checkbox: true,
+            },
+            {
+              title: 'Title',
+              field: 'Title',
+              sortable: true,
+              switchable: false,
+              width: 150,
+              align: 'center',
+              formatter: function(index, row, $element) {
+                return `<a href="https://nvd.nist.gov/vuln/detail/${row.Title}" style="text-decoration: none;" target="_blank" class="link-secondary">${row.Title}</a>`
+              }
+            },
+            {
+              title: 'Points',
+              field: 'CVSS3.Points',
+              sortable: true,
+              switchable: true,
+              align: 'center',
+              formatter: function(index, row, $element) {
+                // return row.CVSS3.Points
+                // if (row.CVSS3.Points == 0) return row.CVSS2.Points
+                // else return row.CVSS3.Points
+                if (row.CVSS3.Points == 0) return `${parseFloat(row.CVSS2.Points)} (CVSS2)`
+                else return parseFloat(row.CVSS3.Points)
+              }
+            },
+            {
+              title: 'Description',
+              field: 'Description',
+              align: 'left',
+              sortable: false,
+              switchable: false
+            },
+            {
+              title: 'EPSS',
+              field: 'epss',
+              align: 'left',
+              sortable: true,
+              switchable: true,
+              visible: false
+            },
+            {
+              title: 'Percentile',
+              field: 'percentile',
+              align: 'left',
+              sortable: true,
+              switchable: true,
+              visible: false
+            },
+            {
+              field: 'operate',
+              title: '<i class="fa-solid fa-gear" style="color: #000000;"></i>',
+              align: 'center',
+              clickToSelect: false,
+              switchable: false,
+              events: window.operateEvents,
+              formatter: function(index, row, $element) {
+                return `<a href="javascript:void(0);" class="px-2 removeItem">
+                    <i class="fa-solid fa-trash" style="color: #000000;"></i>
+                  </a>`
+              }
+            }
+          ]
+        })
+
+
+
+
+
+
+        // Feature 0 Year Sorter
+        $(`#yearsorter${index}`).change(function() {
+          let tmp = parseInt(this.value)
+          $(`#table${index}`).bootstrapTable('filterBy', {
+            year: tmp
+          }, {
+            'filterAlgorithm': (row, filters) => {
+              let tmp2 = parseInt(row.Title.substr(4,4))
+              return tmp2 > filters.year
+            }
+          })
+        })
+        
+        // Function 0 Copy Jira Format
+        $(`#button${index}-0`).click(function () {
+          let selects = $(`#table${index}`).bootstrapTable('getSelections') 
+          let result = ''
+          if(!selects.length) {
+            toastFailed.show()
+          } else {
+            link = $(`#search-link-${index}`).attr('href')
+
+            
+            selects.forEach((e, index) => {
+              point = e.CVSS3.Exist ? e.CVSS3.Points : e.CVSS2.Points + ' (CVSS2)'
+              if(index == 0){
+                result += 
+                `* *[CVE Search Results on NIST|${link}]*\n\n*Refer CVE*\n*[${e.Title}|https://nvd.nist.gov/vuln/detail/${e.Title}]*\n||Reference||\n|*{color:red}${e.CVSS3.Class}{color} ${point}*|\n|*CVSS3:* ${e.CVSS3.String}|\n||Description||\n|${e.Description}|`
+              } else if(index == 1){
+                result += `\n\n*Others Reference*\n`
+                result += `# *[${e.Title}|https://nvd.nist.gov/vuln/detail/${e.Title}]*\n||Reference||\n|*{color:red}${e.CVSS3.Class}{color} ${point}*|\n|*CVSS3:* ${e.CVSS3.String}|\n||Description||\n|${e.Description}|\n`
+              } else {
+                result += `# *[${e.Title}|https://nvd.nist.gov/vuln/detail/${e.Title}]*\n||Reference||\n|*{color:red}${e.CVSS3.Class}{color} ${point}*|\n|*CVSS3:* ${e.CVSS3.String}|\n||Description||\n|${e.Description}|\n`
+              }
+              
+            });
+            navigator.clipboard.writeText(result).then(() => {
+              toastSuccess.show()
+            });
+          }
+        })
+        
+
+
+        // Function 1 Hide Minor
+        $(`#button${index}-1`).click(function () {
+          $(`#table${index}`).bootstrapTable('filterBy', {
+            Point: 4
+          }, {
+            'filterAlgorithm': (row, filters) => {
+              // let tmp = row.CVSS3.Points
+              let tmp = row.CVSS3.Points ? row.CVSS3.Points : row.CVSS2.Points
+              return tmp > filters.Point
+            }
+          })
+        })
+
+
+        // // Function 2 Hide Major
+        $(`#button${index}-2`).click(function () {
+          $(`#table${index}`).bootstrapTable('filterBy', {
+            Point: 7
+          }, {
+            'filterAlgorithm': (row, filters) => {
+              let tmp = row.CVSS3.Points ? row.CVSS3.Points : row.CVSS2.Points
+              return tmp > filters.Point
+            }
+          })
+        })
+
+
+        // // Function 3 Reset
+        $(`#button${index}-3`).click(function () {
+          $(`#table${index}`).bootstrapTable('filterBy',{} , {
+            'filterAlgorithm': (row, filters) =>{
+              return true  
+            }}
+          )
+        })
+
+        // // Function 4 Expand
+        $(`#button${index}-4`).click(function () {
+          $(`#table${index}`).bootstrapTable('expandAllRows')
+        })
+
+
+        // // Function 5 Collpase
+        $(`#button${index}-5`).click(function () {
+          $(`#table${index}`).bootstrapTable('collapseAllRows')
+        })
+
+
+        // // Function 6 Copy to EPSS format
+        $(`#button${index}-6`).click(function () {
+          epssToStr = function( epss, per ) {
+            roundTo = function( num, decimal ) { return Math.round( ( num + Number.EPSILON ) * Math.pow( 10, decimal ) ) / Math.pow( 10, decimal ); }
+            rank = per.substring(2, 4)
+
+            postfix = per.substring(3,4)
+            postfix = postfix == '1' ? 'st': postfix =='2' ? 'nd': postfix =='3' ? 'th': 'th'
+
+            score = parseFloat(epss)
+            score = roundTo(score, 5)
+            return `${score} (${rank}${postfix})`
+          }
+
+          let selects = $(`#table${index}`).bootstrapTable('getSelections') 
+          let result = ''
+          if(!selects.length) {
+            toastFailed.show()
+          } else {
+            result = `*EPSS Reference*\n`
+            selects.forEach( e => {
+              point = e.CVSS3.Exist ? e.CVSS3.Points : e.CVSS2.Points + ' (CVSS2)'
+              // epss = this.epssToStr(e.epss, e.percentile)
+              try {
+                epss = epssToStr(e.epss, e.percentile)
+              } catch {
+                epss = 'N/A'
+              }
+              result += `# *[${e.Title}|https://nvd.nist.gov/vuln/detail/${e.Title}]*\n||Reference||\n|*{color:red}${e.CVSS3.Class}{color} ${point}*|\n|*CVSS3:* ${e.CVSS3.String}|\n|*EPSS:* ${epss}|\n||Description||\n|${e.Description}|\n||Comment||\n| Modified_Here |\n`
+             })
+            navigator.clipboard.writeText(result).then(() => {
+              toastSuccess.show()
+            });
+          }
+        })
+
+        // // Function 7 Select to Remove // NotUsed
+        $(`#button${index}-7`).click(function () {
+          // <button id="button${index}-7" class="btn btn-outline-secondary toolbar">Remove</button>
+          // $(`#table${index}`).bootstrapTable('collapseAllRows')
+          var ids = $.map($(`#table${index}`).bootstrapTable('getSelections'), function (row) {
+            return row.Title
+          })
+          $(`#table${index}`).bootstrapTable('remove', {
+            field: 'Title',
+            values: ids
+          })
+        })
+        // // Function 8 Collpase
+        $(`#button${index}-8`).click(function () {
+          $(`#table${index}`).bootstrapTable('toggleFullscreen')
+        })
+        // // Feature 1: Disable on No Selection
+        var $cp1 = $(`#button${index}-0`)
+        var $cp2 = $(`#button${index}-6`)
+        $cp1.prop('disabled', true)
+        $cp2.prop('disabled', true)
+        $(`#table${index}`).on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
+          $cp1.prop('disabled', !$(`#table${index}`).bootstrapTable('getSelections').length)
+          $cp2.prop('disabled', !$(`#table${index}`).bootstrapTable('getSelections').length)
+        })
+
+        // // Feature 2: Reset Table
+        $(`#reset-${index}`).click(function () {
+          initTable(item, index)
+        })
+
+
+        $('.btn-secondary').addClass("btn-outline-secondary" ).removeClass("btn-secondary");
+      }
+
+
+
+      result.forEach((item, index) => {
+        window.operateEvents = {
+          'click .removeItem': function (e, value, row, index) {
+            $(`#table${index}`).bootstrapTable('remove', {
+              field: 'Title',
+              values: [row.Title]
+            })
+          }
+        }
+        // TODO implement
+        // <a id="reset-${index}" href="javascript:void(0);" class="h6 link-secondary px-2" style="text-decoration: none;">Reset Table</a>
+        // TODO bug
+        // <button id="button${index}-8" class="btn btn-outline-secondary toolbar">Full Screen</button>
+        $("#insertion").append(`
+        <hr class="bg-dark border-5 border-top border-dark mt-3 mb-4"/>
+        <div class="title-desc">
+          <a id="search-link-${index}" href="${item.Link}" target="_blank" class="h4 link-secondary" style="text-decoration: none;">${item.Name}</a>
+          
+          <a id="button${index}-0" href="javascript:void(0);" class="h6 link-secondary px-2" style="text-decoration: none;">Copy as Jira</a>
+          <a id="button${index}-6" href="javascript:void(0);" class="h6 link-secondary px-2" style="text-decoration: none;">Copy as EPSS</a>
+          <a id="reset-${index}" href="javascript:void(0);" class="h6 link-secondary px-2" style="text-decoration: none;">Reset Table</a>
+        </div>
+
+        <div class="" id="toolbar${index}">
+          <input id="yearsorter${index}" class=" form-control"
+            type="number" value="2015" min="2010" max="2025"
+            style="display: inline-block; width: 100px; vertical-align: middle;"
+            >
+          <button id="button${index}-1" class="btn btn-outline-secondary toolbar">Hide Minor</button>
+          <button id="button${index}-2" class="btn btn-outline-secondary toolbar">Hide Major</button>
+          <button id="button${index}-3" class="btn btn-outline-secondary toolbar">Reset Hiding</button>
+          <button id="button${index}-4" class="btn btn-outline-secondary toolbar">Expand All</button>
+          <button id="button${index}-5" class="btn btn-outline-secondary toolbar">Collapse All</button>
+        </div>
+
+
+        <table id="table${index}"
+          data-toolbar="#toolbar${index}"
+          data-buttons-align="right"
+          data-toolbar-align="left"
+
+
+          data-toggle="table"
+          data-click-to-select="true"
+
+          data-show-columns="true"
+          data-show-columns-toggle-all="true"
+
+          data-detail-view="true"
+          data-detail-view-icon="true"
+          data-detail-formatter="detailFormatter"
+          
+          data-use-row-attr-func="true"
+
+          data-reorderable-rows="true"
+          data-resizable="true"
+          data-remember-order="true"
+        ></table>`) // Default Sorting is set as data-sort-name
+        // data-sort-name="Points"
+        initTable(item, index)
+      }) 
+
+      var toastSuccess = new bootstrap.Toast(document.getElementById('toast-success'), {delay:600})
+      var toastFailed = new bootstrap.Toast(document.getElementById('toast-fail'), {delay:600})
+    </script>
+  </body>
+</html>
